@@ -1,0 +1,29 @@
+# type policy is attaching
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel",
+        "ec2messages:*",
+        "elasticloadbalancing:ModifyListener",
+        "elasticloadbalancing:Describe*",
+        "elasticloadbalancing:RemoveListenerCertificates",
+        "acm:ImportCertificate"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetEncryptionConfiguration"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
