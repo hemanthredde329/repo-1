@@ -1,0 +1,71 @@
+provider "aws" {
+access_key = "AKIAIIRDLTVVZGSEHOMA"
+secret_key = "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"
+region = "eu-central-1"
+}
+
+
+module "Alarms_for_Kinesis"{
+  source = "./m1/cloudwatch"
+  alarm_name = "TMNL_alarm_kinesis"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods = "1"
+  metric_name = "TMNL_metric"
+  namespace = "TMNL_namespace"
+  periods = "10"
+  statistic = "Average"
+  threshold = "1"
+  alarm_description = "TMNL_alarm_kinesis"
+  sns_arn = "sjckjicuucuca"                          #need to create sns topic
+  delivery_stream_alarm_name = "TMNL_Kinesis_DStream"
+}
+
+module "TMNL_s3" {
+source = "./m1/s3"
+bucket_name = "tmnl-bucket086"
+acl = "private"
+}
+
+module "TMNL_kms_key" {
+source = "./m1/kms"
+description = "TMNL kms key"
+deletion_window = "10"
+key_usage = "ENCRYPT_DECRYPT"
+customer_key_spec = "RSA_3072"
+is_enaled = "true"
+name = "alias/TMNL_key_alias"               # The name must begin with alias/
+target_key_id = "aws_kms_key.TMNL_key.id"
+}
+
+module "TMNL_cloudfront" {
+source = "./m1/cloudfront"
+domain-name = "aws_s3_bucket.kinesis_bucket.bucket_regional_domain_name"
+origin_id = "aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path"
+enabled  = "true"
+is_ipv6_enabled = "true"
+allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+cached_methods = ["GET", "HEAD"]
+target_origin_id = "local.s3_origin_id"
+query_string = "false"
+forward_cookies = "none"
+viewer_protocol_policy = "allow-all"
+min_ttl = 0
+default_ttl = 3600
+max_ttl = 86400
+allowed_methods1 = ["GET", "HEAD", "OPTIONS"]
+cached_methods1 = ["GET", "HEAD", "OPTIONS"]
+viewer_protocol_policy1 = "redirect-to-https"
+}
+
+
+module "TMNL_kinesis" {
+source = "./m1/kinesis"
+kinesis_stream_name = "TMNL_Kinesis_stream"
+shard_count = "1"
+retention_period = "48"
+encryption_type = "KMS"
+kms_key_id = "aws_kms_key.TMNL_key.id"
+role_arn = "aws_iam_role.firehose_role.arn"
+kineis_firhose_DStream = "TMNL_kinesis_firhose_Dstream"
+bucket_arn = "aws_s3_bucket.kinesis_bucket.arn"
+}

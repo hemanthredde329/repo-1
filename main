@@ -1,0 +1,23 @@
+
+
+module "iam_role" {
+   source = "./m1/IAM"
+}
+
+module "ln329" {
+   source = "./m1/EC2"
+   ami_id = "ami-03c3a7e4263fd998c"
+   instance_type = "t2.micro"
+   name = "t-systems1,t-systems2"
+}
+
+module "vpc329" {
+   source = "./m1/VPC"
+   vpc_cidr = "10.0.0.0/26"
+   vpc_tenancy = "default"
+   vpc_name = "t-sys-vpc"
+   public_subnets_1a = "10.0.0.0/28,10.0.0.16/28"
+   availability_zones = "eu-central-1a,eu-central-1b"
+   public_subnets_1a_names = "pu_sub_1a"
+}
+

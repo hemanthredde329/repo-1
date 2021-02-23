@@ -1,0 +1,8 @@
+data "template_file" "assumerole_policy" {
+  template = file("${path.m1}/templates/assumerole_policy.json")
+}
+
+data "template_file" "role" {
+  template = file("${path.m1}/templates/role.json")
+}
+
